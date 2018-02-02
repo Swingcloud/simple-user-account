@@ -1,13 +1,14 @@
 source 'https://rubygems.org'
-ruby "2.5.0"
+ruby '2.5.0'
 
-gem "sinatra"
-gem "activerecord"
-gem "sinatra-activerecord"
+gem 'activerecord'
+gem 'sinatra'
+gem 'sinatra-activerecord'
+gem 'sinatra-contrib'
 gem 'sinatra-flash'
 gem 'sinatra-redirect-with-flash'
-gem 'rake'
 gem 'pg', '~> 0.18'
+gem 'rake'
 
 group :development do
 
