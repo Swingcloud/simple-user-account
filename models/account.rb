@@ -1,7 +1,9 @@
-class User < ActiveRecord::Base
+class Account < ActiveRecord::Base
   before_create :set_uid
-  has_one :account
+  has_many :payments
 
+  belongs_to :user
+  
   private
 
   def set_uid
