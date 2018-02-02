@@ -40,6 +40,8 @@ namespace '/api/v0' do
 
   get '/users/:uid' do
     user = User.find_by(uid: params[:uid])
+    halt(404, { message:'Can not find this user'}.to_json) unless user
+    
     output = UserSerializer.new(user)
     output.to_json
   end
@@ -51,7 +53,7 @@ namespace '/api/v0' do
       body UserSerializer.new(user).to_json
     else
       status 422
-      body UserSerializer.new(book).to_json
+      { message: user.errors.full_messages }.to_json
     end
   end
 
