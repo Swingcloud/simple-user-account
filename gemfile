@@ -9,6 +9,7 @@ gem 'sinatra-flash'
 gem 'sinatra-redirect-with-flash'
 gem 'pg', '~> 0.18'
 gem 'rake'
+gem 'bcrypt'
 
 group :development do
 
