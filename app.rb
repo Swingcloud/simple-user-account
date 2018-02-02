@@ -7,10 +7,6 @@ current_dir = Dir.pwd
 Dir["#{current_dir}/models/*.rb"].each { |file| require file }
 Dir["#{current_dir}/serializers/*.rb"].each { |file| require file }
 
-get '/' do
-  'Welcome to XXX!'
-end
-
 namespace '/api/v0' do
   before do
     content_type 'application/json'
@@ -24,7 +20,7 @@ namespace '/api/v0' do
     def user_params
       {
         email: params[:email],
-        # password: params[:password],
+        password: params[:password],
         telephone_number: params[:telephone_number],
         first_name: params[:first_name],
         last_name: params[:last_name]
@@ -39,12 +35,13 @@ namespace '/api/v0' do
       object: "list",
       data: list
     }
-    output.to_json
+    output.to_json(account: false)
   end
 
   get '/users/:uid' do
     user = User.find_by(uid: params[:uid])
-    UserSerializer.new(user).to_json
+    output = UserSerializer.new(user)
+    output.to_json
   end
 
   post '/users' do
@@ -57,4 +54,16 @@ namespace '/api/v0' do
       body UserSerializer.new(book).to_json
     end
   end
+
+  post '/auth' do
+    user = User.find_by(email: params[:email])
+
+    if user && user.authenticate(params[:password])
+      status 200
+      body UserSerializer.new(user).to_json
+    else
+      { message:'Invalid email or password' }.to_json
+    end
+  end
+
 end
