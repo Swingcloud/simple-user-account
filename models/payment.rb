@@ -5,6 +5,6 @@ class Payment < ActiveRecord::Base
   private
 
   def set_uid
-    self.uid = "#{self.class.to_s.downcase}_#{SecureRandom.base64(12)}"
+    self.uid = "pay_#{SecureRandom.base64(12)}"
   end
 end
