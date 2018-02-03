@@ -33,6 +33,15 @@ namespace '/api/v0' do
         card_number: params[:card_number]
       }
     end
+
+    def payment_params
+      {
+        amount: params[:amount],
+        description: params[:description],
+        account_id: params[:account_id],
+        currency: params[:currency]
+      }
+    end
   end
 
   #  START RESOURCES USERS
@@ -118,8 +127,65 @@ namespace '/api/v0' do
     AccountSerializer.new(account).to_json
   end
 
+  post '/users/:user_uid/accounts/:uid/topup' do
+    user = User.find_by(uid: params[:user_uid])
+    halt(404, { message:'Can not find this user'}.to_json) unless user
 
+    account = user.accounts.find_by(uid: params[:uid])
+    halt(404, { message:'Can not find this account'}.to_json) unless account
+
+    halt(404, { message: 'missing amount'}.to_json) unless params[:amount]
+
+    account.balance += params[:amount].to_i
+    if account.save
+      status 200
+      AccountSerializer.new(account).to_json
+    else
+      status 422
+      { message: account.errors.full_messages }.to_json
+    end
+  end
 
   # RESOURCES ACCOUNTS END
+
+  # START RESOURCES PAYMENTS
+
+  post '/payments' do
+    account = Account.find_by(uid: params[:account_id])
+    halt(404, { message:'Can not find this account'}.to_json) unless account
+
+    if params[:amount].to_f > account.balance
+      halt(422, { message: 'Insufficient balance of this account'}.to_json)
+    end
+
+    halt(422, { message: 'Please specify currency'}.to_json) unless params[:currency]
+    account.update(balance: account.balance - params[:amount].to_f)
+    payment = account.payments.new(payment_params)
+
+
+    if payment.save
+      status 200
+      PaymentSerializer.new(payment).to_json
+    else
+      status 422
+      { message: payment.errors.full_messages }.to_json
+    end
+  end
+
+  get '/accounts/:account_uid/payments' do
+    account = Account.find_by(uid: params[:account_uid])
+    halt(404, { message:'Can not find this account'}.to_json) unless account
+
+    payments = account.payments
+    list = payments.map { |payment| PaymentSerializer.new(payment) }
+    output = {
+      object: "list",
+      data: list
+    }
+    output.to_json
+  end
+
+
+  # RESOURCES PAYMENTS END
 
 end
