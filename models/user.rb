@@ -10,7 +10,7 @@ class User < ActiveRecord::Base
   private
 
   def set_uid
-    self.uid = "#{self.class.to_s.downcase}_#{SecureRandom.base64(12)}"
+    self.uid = "#{self.class.to_s.downcase}_#{SecureRandom.base64(12).tr("+/", "-_")}"
   end
 
   def init_account
