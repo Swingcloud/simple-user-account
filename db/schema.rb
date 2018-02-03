@@ -44,7 +44,7 @@ ActiveRecord::Schema.define(version: 20180203045337) do
     t.string "request_address"
     t.string "network_type"
     t.string "network_ip"
-    t.string "netwrok_operator"
+    t.string "network_operator"
     t.string "wireless_access_point"
     t.boolean "livemode", default: true
     t.integer "account_id"

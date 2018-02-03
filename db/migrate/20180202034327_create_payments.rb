@@ -16,7 +16,7 @@ class CreatePayments < ActiveRecord::Migration[5.1]
       t.string  :request_address
       t.string  :network_type
       t.string  :network_ip
-      t.string  :netwrok_operator
+      t.string  :network_operator
       t.string  :wireless_access_point
       t.string  :status
       t.boolean :livemode, :default => true

@@ -26,8 +26,16 @@ namespace '/api/v0' do
         last_name: params[:last_name]
       }
     end
+
+    def account_params
+      {
+        name: params[:name],
+        card_number: params[:card_number]
+      }
+    end
   end
 
+  #  START RESOURCES USERS
   get '/users' do
     users = User.all
     list = users.map { |user| UserSerializer.new(user) }
@@ -38,10 +46,11 @@ namespace '/api/v0' do
     output.to_json(account: false)
   end
 
-  get '/users/:uid' do
-    user = User.find_by(uid: params[:uid])
+  get '/users/:user_uid' do
+    puts params[:uid]
+    user = User.find_by(uid: params[:user_uid])
     halt(404, { message:'Can not find this user'}.to_json) unless user
-    
+
     output = UserSerializer.new(user)
     output.to_json
   end
@@ -56,7 +65,9 @@ namespace '/api/v0' do
       { message: user.errors.full_messages }.to_json
     end
   end
+  # RESOURCES USERS END
 
+  # AUTH
   post '/auth' do
     user = User.find_by(email: params[:email])
 
@@ -67,5 +78,48 @@ namespace '/api/v0' do
       { message:'Invalid email or password' }.to_json
     end
   end
+
+  # START RESOURCES ACCOUNTS
+
+  post '/users/:user_uid/accounts' do
+    user = User.find_by(uid: params[:user_uid])
+    halt(404, { message:'Can not find this user'}.to_json) unless user
+
+    account = user.accounts.new(account_params)
+    if account.save
+      status 200
+      body AccountSerializer.new(account).to_json
+    else
+      status 422
+      { message: account.errors.full_messages }.to_json
+    end
+  end
+
+  get '/users/:user_uid/accounts' do
+    user = User.find_by(uid: params[:user_uid])
+    halt(404, { message:'Can not find this user'}.to_json) unless user
+
+    accounts = user.accounts
+    list = accounts.map { |account| AccountSerializer.new(account) }
+    output = {
+      object: "list",
+      data: list
+    }
+    output.to_json
+  end
+
+  get '/users/:user_uid/accounts/:uid' do
+    user = User.find_by(uid: params[:user_uid])
+    halt(404, { message:'Can not find this user'}.to_json) unless user
+
+    account = user.accounts.find_by(uid: params[:uid])
+    halt(404, { message:'Can not find this account'}.to_json) unless account
+
+    AccountSerializer.new(account).to_json
+  end
+
+
+
+  # RESOURCES ACCOUNTS END
 
 end
