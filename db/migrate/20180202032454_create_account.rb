@@ -4,7 +4,7 @@ class CreateAccount < ActiveRecord::Migration[5.1]
       t.string :card_number
       t.string :name
       t.string :status
-      t.float :balance
+      t.decimal :balance
       t.boolean :livemode, :default => true
       t.timestamps null: false
     end

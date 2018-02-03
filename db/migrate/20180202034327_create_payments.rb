@@ -4,7 +4,7 @@ class CreatePayments < ActiveRecord::Migration[5.1]
       t.string  :demo
       t.string  :name
       t.string  :status
-      t.float :amount
+      t.decimal :amount
       t.string  :currency
       t.text    :description
       t.string  :merchant_name
